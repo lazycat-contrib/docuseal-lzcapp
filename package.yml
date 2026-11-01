@@ -1,0 +1,18 @@
+package: community.lazycat.app.docuseal
+version: 3.3.4
+name: DocuSeal
+description: "Document signing platform: fill and sign PDF forms with reusable templates."
+min_os_version: "1.6.0"
+homepage: https://github.com/docusealco/docuseal
+author: docusealco
+license: AGPL-3.0
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: DocuSeal
+    description: "文档签署平台：用可复用模板填写并签署 PDF 表单，支持多人顺序签署。"
+  en:
+    name: DocuSeal
+    description: "Document signing platform: fill and sign PDF forms with reusable templates."

@@ -1,0 +1,42 @@
+application:
+  subdomain: docuseal
+  multi_instance: false
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://docuseal:3000/
+
+services:
+  docuseal:
+    # upstream: docuseal/docuseal:3.3.4
+    image: docker.1ms.run/docuseal/docuseal:3.3.4
+    # The upstream image runs as uid/gid 2000; run_as maps the persistent
+    # directory owner to the same identity so the SQLite database and uploaded
+    # documents under /data/docuseal stay writable.
+    run_as: "2000:2000"
+    environment:
+      - RAILS_ENV=production
+      # No DATABASE_URL: the Rails config falls back to SQLite at
+      # $WORKDIR/db.sqlite3, which the image already sets to /data/docuseal.
+      - FORCE_SSL=false
+    binds:
+      - /lzcapp/var/data:/data
+
+usage: |
+  DocuSeal 是在线文档签署平台：把 PDF 做成模板，邀请他人在浏览器里填写并签署。
+
+  使用方法：
+  1. 打开应用，第一次访问会要求创建管理员账号（邮箱 + 密码），这个账号只保存在本应用内。
+  2. 进入后台后上传 PDF 建立模板，拖拽放置签名字段、日期字段等。
+  3. 用模板发起签署，把生成的链接发给签署人；多人签署可设置先后顺序。
+
+  数据与安全：
+  - 账号、模板、已签文档和 SQLite 数据库都保存在 /lzcapp/var/data 下，卸载应用会一并删除，请提前导出备份。
+  - 本包没有预置账号或默认密码，首个管理员由你本人在首次访问时创建。
+  - 应用经懒猫入口鉴权访问，未开放无需登录的接口路径。
+  - 签署链接本身是给外部签署人用的，请按需设置有效期，不要长期公开。
+
+  说明：
+  - 未做真机验证：首次管理员创建、模板编辑、签署流程、PDF 渲染以及重启后持久化均未在设备上实测。
+  - 大文件与复杂 PDF 的处理性能未测试。
